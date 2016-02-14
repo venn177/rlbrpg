@@ -16,7 +16,6 @@ class Character:
 		self.defense = 1
 		self.value = 0
 	def do_damage(self, enemy):
-#		damage = min(max(randint(0, self.HP) - randint(0, enemy.HP), 0), enemy.HP)
 		damage = self.offense + randint(0,(self.HP/2)) - enemy.defense
 		if damage < 1:
 			damage = 0
@@ -226,13 +225,11 @@ class Player(Character):
 		if self.state != 'fight': 
 			print "%s can't attack, there's nothing around!" % self.name; self.tired()
 		else:
-			attackchoiceoutput == ""
+			attackchoiceoutput = "[Attack] "
 			for x in range(0, len(skillList)):
 				if skillList[x][1] == 1:
-					attackchoiceoutput += "[ " + x + "] "
-#			for key in Skills:
-#				if key == True:
-#					attackchoiceoutput += "[" + key + "] "
+					attackchoiceoutput += "[" + str(skillList[x][0]) + "] "
+			attackchoiceoutput += "\n> "
 			attackchoice = raw_input(attackchoiceoutput)
 			attackchoice = attackchoice.lower()
 			if attackchoice == "attack":
@@ -245,8 +242,13 @@ class Player(Character):
 					self.state = 'normal'
 				else: 
 					self.enemy_attacks()
-			elif attackchoice == "skill":
-				attackchoice = raw_input("Which skill? ")
+			else:
+				for x in range(0, len(skillList)):
+					if skillList[0][x] == attackchoice and skillList[x][1] == 1:
+						
+					else:
+						print "That's not a skill."
+						
 					
 	def enemy_attacks(self):
 		if self.enemy.do_damage(self): 
@@ -291,10 +293,10 @@ class Player(Character):
 #	}
 
 skillList = []
-skillList.append(["fastball",0])
-skillList.append(["powerswing",0])
-skillList.append(["killerheat",0])
-skillList.append(["eephus",0])
+skillList.append(["Fastball",0])
+skillList.append(["Power Swing",0])
+skillList.append(["Kill Heat",0])
+skillList.append(["Eephus",0])
 			
 Commands = {
 	'battle': Player.battle,
@@ -307,11 +309,11 @@ Commands = {
 	}
 
 p = Player()
-p.name = raw_input("What is your character's name? ")
-p.playerclass = raw_input("What class do you want to be? [Batter/Pitcher] ")
+p.name = raw_input("What is your character's name?\n> ")
+p.playerclass = raw_input("What class do you want to be? [Batter/Pitcher]\n> ")
 while p.playerclass not in ['pitcher', 'batter', 'Batter', 'Pitcher']:
 	print "You can only be a pitcher or batter!"
-	p.playerclass = raw_input("What class do you want to be? [Batter/Pitcher] ")
+	p.playerclass = raw_input("What class do you want to be? [Batter/Pitcher]\n> ")
 p.playerclass = p.playerclass.lower()
 if p.playerclass == "batter":
 	p.HP = 10
@@ -320,8 +322,7 @@ if p.playerclass == "batter":
 	p.MP_max = 4
 	p.offense = 3
 	p.defense = 2
-	#Skills['powerswing'] = True
-	skillList[0][1] == 1
+	skillList[1][1] = 1
 elif p.playerclass == "pitcher":
 	p.HP = 6
 	p.HP_max = 6
@@ -329,11 +330,9 @@ elif p.playerclass == "pitcher":
 	p.MP_max = 10
 	p.offense = 1
 	p.defense = 1
-	#Skills['fastball'] = True
-	skillList[1][1] == 1
-print "(type help to get a list of actions)\n"
+	skillList[0][1] = 1
+print "(type help to get a list of actions)"
 print "%s enters a dark stadium full of putrid, overused jokes and out-of-date memes." % p.name
-
 while(p.HP > 0):
 	line = raw_input("> ")
 	args = line.split()
