@@ -8,20 +8,45 @@ class Character:
 	def __init__(self):
 		self.name = ""
 		self.playerclass = ""
-		self.health = 1
-		self.health_max = 1
+		self.HP = 1
+		self.HP_max = 1
 		self.MP = 1
 		self.MP_max = 1
+		self.offense = 1
+		self.defense = 1
 		self.value = 0
 	def do_damage(self, enemy):
-		damage = min(max(randint(0, self.health) - randint(0, enemy.health), 0), enemy.health)
-		enemy.health = enemy.health - damage
-		if damage == 0: 
+#		damage = min(max(randint(0, self.HP) - randint(0, enemy.HP), 0), enemy.HP)
+		damage = self.offense + randint(0,(self.HP/2)) - enemy.defense
+		if damage < 1:
+			damage = 0
+		enemy.HP = enemy.HP - damage
+		if damage < 1: 
 			possibilities = ["%s evades %s's attack.", "%s blocks %s's attack.", "%s will have none of what %s is giving out."]
-			print random.choice(possibilities) % (enemy.name, self.name) + " [%d/%d]" % (enemy.health, enemy.health_max)
+			print random.choice(possibilities) % (enemy.name, self.name) + " [%d/%d]" % (enemy.HP, enemy.HP_max) + "\n[Battle] [Status] [Flee]"
 		else: 
-			print "%s deals %d damage to %s! [%d/%d]" % (self.name, damage, enemy.name, enemy.health, enemy.health_max)
-		return enemy.health <= 0
+			print "%s deals %d damage to %s! [%d/%d]" % (self.name, damage, enemy.name, enemy.HP, enemy.HP_max) 
+		return enemy.HP <= 0
+	def do_fastball(self, enemy):
+		damage = randint(1,self.HP) - enemy.defense
+		enemy.HP -= damage
+		print "FASTBALL! %s deals %d damage to %s! [%d/%d]" % (self.name, damage, enemy.name, enemy.HP, enemy.HP_max)
+		return enemy.HP <= 0
+	def do_powerswing(self, enemy):
+		damage = self.offense * 2 + randint(1,min(self.HP/2)) - enemy.defense
+		enemy.HP -= damage
+		print "Power swing! %s deals %d damage to %s! [%d/%d]" % (self.name, damage, enemy.name, enemy.HP, enemy.HP_max)
+		return enemy.HP <= 0
+	def do_killerheat(self, enemy):
+		damage = randint(6,50) - enemy.defense
+		enemy.HP -= damage
+		print "Throwing killer heat! %s deals %d damage to %s! [%d/%d]" % (self.name, damage, enemy.name, enemy.HP, enemy.HP_max)
+		return enemy.HP <= 0
+	def do_eephus(self, enemy):
+		damage = randint(5,10)
+		enemy.HP -= damage
+		print "An eephus?! %s deals %d true damage to %s! [%d/%d]" % (self.name, damage, enemy.name, enemy.HP, enemy.HP_max)
+		return enemy.HP <= 0
 
 class Enemy(Character):
 	def __init__(self, player):
@@ -33,23 +58,35 @@ class Enemy(Character):
 		encounterrand = randint(1,50)
 		self.value = randint(1,5)
 		if p.level <= 3:
-			self.health_max = randint(1,6)
+			self.HP_max = randint(1,6)
+			self.offense = randint(1,3)
+			self.defense = randint(1,3)
 		elif p.level <= 5:
-			self.health_max = randint(3,8)
+			self.HP_max = randint(3,8)
+			self.offense = randint(1,5)
+			self.defense = randint(1,3)
 		elif p.level <= 7:
-			self.health_max = randint(5,12)
+			self.HP_max = randint(5,12)
+			self.offense = randint(1,5)
+			self.defense = randint(1,5)
 		elif p.level <= 9:
-			self.health_max = randint(5,15)
+			self.HP_max = randint(5,15)
+			self.offense = randint(2,6)
+			self.defense = randint(2,6)
 		elif p.level <= 11:
-			self.health_max = randint(5,20)
+			self.HP_max = randint(5,20)
+			self.offense = randint(2,7)
+			self.defense = randint(2,7)
 		else:
-			self.health_max = randint(7,30)
-		if encounterrand <= 5:
+			self.HP_max = randint(7,30)
+			self.offense = randint(3,10)
+			self.defense = randint(3,10)
+		if encounterrand == 5:
 			if bossflags['rusty'] != True:
 				bossflags['rusty'] = True
 				self.name = "Team Leader Rusty 'The Rusty One' Nasution"
 				self.value = 10
-				self.health_max = 10
+				self.HP_max = 10
 			else:
 				self.enemy = Enemy(self)
 		if encounterrand <= 7:
@@ -57,15 +94,15 @@ class Enemy(Character):
 				bossflags['davephillips'] = True
 				self.name = "The Mayor, Dave Phillips"
 				self.value = 10
-				self.health_max = 15
+				self.HP_max = 15
 			else:
 				self.enemy = Enemy(self)
-		if encounterrand <= 8:
+		if encounterrand == 8:
 			if bossflags['crayon'] != True:
 				bossflags['crayon'] = True
 				self.name = "The Crayon, Bonifazio Geccerelli"
 				self.value = 10
-				self.health_max = 15
+				self.HP_max = 15
 			else:
 				self.enemy = Enemy(self)
 		if encounterrand <= 15:
@@ -73,47 +110,47 @@ class Enemy(Character):
 				bossflags['marty'] = True
 				self.name = "The one who takes you to lunch, Martin Bunch"
 				self.value = 10
-				self.health_max = 5
+				self.HP_max = 5
 			else:
 				self.enemy = Enemy(self)
-		if encounterrand <= 16:
+		if encounterrand == 16:
 			if bossflags['g-rey'] != True:
 				bossflags['g-rey'] = True
 				self.name = "The original prospect, Gary Reynolds"
 				self.value = 10
-				self.health_max = 25
+				self.HP_max = 25
 			else:
 				self.enemy = Enemy(self)
-		if encounterrand <= 17:
+		if encounterrand == 17:
 			if bossflags['terror'] != True:
 				bossflags['terror'] = True
 				self.name = "The terror, Steve Dillard"
 				self.value = 10
-				self.health_max = 25
+				self.HP_max = 25
 			else:
 				self.enemy = Enemy(self)
-		if encounterrand <= 18:
+		if encounterrand == 18:
 			if bossflags['bye-bye'] != True:
 				bossflags['bye-bye'] = True
 				self.name = "Bye-bye himself-- Antonio Pujals"
 				self.value = 10
-				self.health_max = 25
+				self.HP_max = 25
 			else:
 				self.enemy = Enemy(self)
-		if encounterrand <= 19:
+		if encounterrand == 19:
 			if bossflags['thunder'] != True:
 				bossflags['thunder'] = True
 				self.name = "The never-ending offense, Thunder, Juan Munoz"
 				self.value = 10
-				self.health_max = 35
+				self.HP_max = 35
 			else:
 				self.enemy = Enemy(self)
-		if encounterrand <= 20:
+		if encounterrand == 20:
 			if bossflags['spoon'] != True:
 				bossflags['spoon]'] = True
 				self.name = "The Spoonman Rafael Diaz" # he should do more damage once that's set up
 				self.value = 10
-				self.health_max = 20
+				self.HP_max = 20
 			else:
 				self.enemy = Enemy(self)
 		if encounterrand == 50:
@@ -121,10 +158,10 @@ class Enemy(Character):
 				bossflags['serafino'] = True		
 				self.name = "True Grit, Serafino De Mesquites"
 				self.value = 1000
-				self.health_max = 100
+				self.HP_max = 100
 			else:
 				self.enemy = Enemy(self)
-		self.health = self.health_max
+		self.HP = self.HP_max
 
 class Player(Character):
 	def __init__(self):
@@ -135,13 +172,13 @@ class Player(Character):
 		self.xpNext = 20
 	def quit(self):
 		print "%s gives up, allowing the dankness to overtake them." % self.name
-		self.health = 0
+		self.HP = 0
 	def help(self): 
 		print Commands.keys()
 	def status(self): 
-		print "HP: %d/%d, MP: %d/%d, Lvl: %d, XP: %d/%d" % (self.health, self.health_max, self.MP, self.MP_max, self.level, self.experience, self.xpNext)
+		print "HP: %d/%d, MP: %d/%d, Lvl: %d, Off: %d, Def: %d, XP: %d/%d" % (self.HP, self.HP_max, self.MP, self.MP_max, self.level, self.offense, self.defense, self.experience, self.xpNext)
 	def tired(self):
-		self.health = max(1, self.health - 1)
+		self.HP = max(1, self.HP - 1)
 		print "%s is getting tired of wandering..." % self.name
 	def rest(self):
 		if self.state != 'normal':
@@ -150,12 +187,12 @@ class Player(Character):
 			print "%s rests." % self.name
 		if randint(0, 1):
 			self.enemy = Enemy(self)
-			print "%s is rudely interrupted by %s! [%d/%d]" % (self.name, self.enemy.name, self.enemy.health, self.enemy.health_max)
+			print "%s is rudely interrupted by %s! [%d/%d]" % (self.name, self.enemy.name, self.enemy.HP, self.enemy.HP_max)
 			self.state = 'fight'
 			self.enemy_attacks()
 		else:
-			if self.health < self.health_max:
-				self.health += p.level
+			if self.HP < self.HP_max:
+				self.HP += p.level
 				self.MP += p.level
 				if self.MP > self.MP_max:
 					self.MP = self.MP_max
@@ -170,7 +207,7 @@ class Player(Character):
 			print "%s " % self.name + random.choice(possibilities) + "..."
 		if randint(0, 1):
 			self.enemy = Enemy(self)
-			print "%s encounters %s! [%d/%d]" % (self.name, self.enemy.name, self.enemy.health, self.enemy.health_max)
+			print "%s encounters %s! [%d/%d]\n[Battle] [Status] [Flee]" % (self.name, self.enemy.name, self.enemy.HP, self.enemy.HP_max)
 			self.state = 'fight'
 		else:
 			if randint(0, 1): 
@@ -179,29 +216,38 @@ class Player(Character):
 		if self.state != 'fight': 
 			print "%s has no reason to run right now." % self.name
 		else:
-			if randint(1, self.health + 5) > randint(1, self.enemy.health):
+			if randint(1, self.HP + 5) > randint(1, self.enemy.HP):
 				print "%s pulls himself, abandoning %s." % (self.name, self.enemy.name)
 				self.enemy = None
 				self.state = 'normal'
 			else: 
 				print "%s couldn't escape from %s!" % (self.name, self.enemy.name); self.enemy_attacks()
-	def attack(self):
+	def battle(self):
 		if self.state != 'fight': 
 			print "%s can't attack, there's nothing around!" % self.name; self.tired()
 		else:
-			if self.do_damage(self.enemy):
-				announce = "%s defeats %s, gaining %d XP!" % (self.name, self.enemy.name, self.enemy.value)
-				print announce.upper()
-				self.experience = self.experience + self.enemy.value
-				self.level_up()
-				self.enemy = None
-				self.state = 'normal'
-#			if randint(0, self.health) < 10:
-#				self.health = self.health + 1
-#				self.health_max = self.health_max + 1
-#				print "%s feels stronger!" % self.name
-			else: 
-				self.enemy_attacks()
+			attackchoiceoutput == ""
+			for x in range(0, len(skillList)):
+				if skillList[x][1] == 1:
+					attackchoiceoutput += "[ " + x + "] "
+#			for key in Skills:
+#				if key == True:
+#					attackchoiceoutput += "[" + key + "] "
+			attackchoice = raw_input(attackchoiceoutput)
+			attackchoice = attackchoice.lower()
+			if attackchoice == "attack":
+				if self.do_damage(self.enemy):
+					announce = "%s defeats %s, gaining %d XP!" % (self.name, self.enemy.name, self.enemy.value)
+					print announce.upper()
+					self.experience = self.experience + self.enemy.value
+					self.level_up()
+					self.enemy = None
+					self.state = 'normal'
+				else: 
+					self.enemy_attacks()
+			elif attackchoice == "skill":
+				attackchoice = raw_input("Which skill? ")
+					
 	def enemy_attacks(self):
 		if self.enemy.do_damage(self): 
 			print "%s got got by %s!!!\nR.I.P." %(self.name, self.enemy.name)
@@ -212,32 +258,52 @@ class Player(Character):
 			if p.playerclass == "batter":
 				randhp = randint(1,6)
 				randmp = randint(1,2)
-				self.health_max += randhp
+				self.HP_max += randhp
 				self.MP_max += randmp
-				self.health += randhp
+				self.HP += randhp
 				self.MP += randmp
 			if p.playerclass == "pitcher":
 				randhp = randint(1,3)
 				randmp = randint(1,6)
-				self.health_max += randhp
+				self.HP_max += randhp
 				self.MP_max += randmp
-				self.health += randhp
+				self.HP += randhp
 				self.MP += randmp
-			if self.health > self.health_max:
-				self.health = self.health_max
+			if self.HP > self.HP_max:
+				self.HP = self.HP_max
 			if self.MP > self.MP_max:
 				self.MP = self.MP_max
-			print "%s leveled up! HP is now %d and MP is now %d!" % (self.name, self.health_max, self.MP_max)
+			print "%s leveled up! HP is now %d and MP is now %d!" % (self.name, self.HP_max, self.MP_max)
+			upgradechoice = raw_input("Increase offense or defense? [Offense/Defense] ")
+			while upgradechoice not in ['offense', 'defense', 'offense', 'defense']:
+				upgradechoice = raw_input("Increase offense or defense? [Offense/Defense] ")
+			upgradechoice = upgradechoice.lower()
+			if upgradechoice == "offense":
+				self.offense += 1
+			elif upgradechoice == "defense":
+				self.defense += 1
 			
+#Skills = {
+#	'fastball': False,
+#	'powerswing': False,
+#	'killerheat': False,
+#	'eephus': False,
+#	}
 
+skillList = []
+skillList.append(["fastball",0])
+skillList.append(["powerswing",0])
+skillList.append(["killerheat",0])
+skillList.append(["eephus",0])
+			
 Commands = {
-	'quit': Player.quit,
-	'help': Player.help,
-	'status': Player.status,
-	'rest': Player.rest,
+	'battle': Player.battle,
 	'explore': Player.explore,
+	'rest': Player.rest,
+	'status': Player.status,
 	'flee': Player.flee,
-	'attack': Player.attack,
+	'help': Player.help,
+	'quit': Player.quit,
 	}
 
 p = Player()
@@ -248,19 +314,27 @@ while p.playerclass not in ['pitcher', 'batter', 'Batter', 'Pitcher']:
 	p.playerclass = raw_input("What class do you want to be? [Batter/Pitcher] ")
 p.playerclass = p.playerclass.lower()
 if p.playerclass == "batter":
-	p.health = 10
-	p.health_max = 10
+	p.HP = 10
+	p.HP_max = 10
 	p.MP = 4
 	p.MP_max = 4
+	p.offense = 3
+	p.defense = 2
+	#Skills['powerswing'] = True
+	skillList[0][1] == 1
 elif p.playerclass == "pitcher":
-	p.health = 6
-	p.health_max = 6
+	p.HP = 6
+	p.HP_max = 6
 	p.MP = 10
 	p.MP_max = 10
+	p.offense = 1
+	p.defense = 1
+	#Skills['fastball'] = True
+	skillList[1][1] == 1
 print "(type help to get a list of actions)\n"
 print "%s enters a dark stadium full of putrid, overused jokes and out-of-date memes." % p.name
 
-while(p.health > 0):
+while(p.HP > 0):
 	line = raw_input("> ")
 	args = line.split()
 	if len(args) > 0:
