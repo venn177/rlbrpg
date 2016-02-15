@@ -28,9 +28,9 @@ class Character:
 		return enemy.HP <= 0
 	def do_fastball(self, enemy):
 		self.MP -= 3
-		damage = randint(1,self.HP) - enemy.defense
+		damage = randint(1,self.HP)
 		enemy.HP -= damage
-		print "FASTBALL! %s deals %d damage to %s! [%d/%d]" % (self.name, damage, enemy.name, enemy.HP, enemy.HP_max)
+		print "Fastball! %s deals %d true damage to %s! [%d/%d]" % (self.name, damage, enemy.name, enemy.HP, enemy.HP_max)
 		return enemy.HP <= 0
 	def do_powerswing(self, enemy):
 		self.MP -= 2
