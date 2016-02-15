@@ -424,7 +424,12 @@ elif p.playerclass == "pitcher":
 	skillList[0][1] = 1
 print "(type help to get a list of actions)"
 print "%s enters a dark stadium full of putrid, overused jokes and out-of-date memes." % p.name
-print Player.help
+attackchoiceoutput = "[Attack] " 
+for x in range(0, len(skillList)):
+	if skillList[x][1] == 1:
+		attackchoiceoutput += "[" + str(skillList[x][0]) + "] "
+attackchoiceoutput += "[Status] [Explore] [Rest] [Help] [Quit]"
+print attackchoiceoutput
 while(p.HP > 0):
 	line = raw_input("> ")
 	args = line.split()
@@ -437,3 +442,5 @@ while(p.HP > 0):
 				break
 		if not commandFound:
 			print "%s doesn't understand the suggestion." % p.name
+			
+raw_input()
