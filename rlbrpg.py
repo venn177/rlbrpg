@@ -16,7 +16,7 @@ class Character:
 		self.defense = 1
 		self.value = 0
 	def do_damage(self, enemy):
-		damage = self.offense + randint(0,(self.HP/2)) - enemy.defense
+		damage = int(self.offense + randint(0,(self.HP/2)) - enemy.defense)
 		if damage < 1:
 			damage = 0
 		enemy.HP = enemy.HP - damage
@@ -27,21 +27,25 @@ class Character:
 			print "%s deals %d damage to %s! [%d/%d]" % (self.name, damage, enemy.name, enemy.HP, enemy.HP_max) 
 		return enemy.HP <= 0
 	def do_fastball(self, enemy):
+		self.MP -= 3
 		damage = randint(1,self.HP) - enemy.defense
 		enemy.HP -= damage
 		print "FASTBALL! %s deals %d damage to %s! [%d/%d]" % (self.name, damage, enemy.name, enemy.HP, enemy.HP_max)
 		return enemy.HP <= 0
 	def do_powerswing(self, enemy):
-		damage = self.offense * 2 + randint(1,min(self.HP/2)) - enemy.defense
+		self.MP -= 2
+		damage = self.offense * 2 + randint(1,self.HP/2) - enemy.defense
 		enemy.HP -= damage
 		print "Power swing! %s deals %d damage to %s! [%d/%d]" % (self.name, damage, enemy.name, enemy.HP, enemy.HP_max)
 		return enemy.HP <= 0
 	def do_killerheat(self, enemy):
+		self.MP -= 15
 		damage = randint(6,50) - enemy.defense
 		enemy.HP -= damage
 		print "Throwing killer heat! %s deals %d damage to %s! [%d/%d]" % (self.name, damage, enemy.name, enemy.HP, enemy.HP_max)
 		return enemy.HP <= 0
 	def do_eephus(self, enemy):
+		self.MP -= 6
 		damage = randint(5,10)
 		enemy.HP -= damage
 		print "An eephus?! %s deals %d true damage to %s! [%d/%d]" % (self.name, damage, enemy.name, enemy.HP, enemy.HP_max)
@@ -91,7 +95,7 @@ class Enemy(Character):
 		if encounterrand <= 7:
 			if bossflags['davephillips'] != True:
 				bossflags['davephillips'] = True
-				self.name = "The Mayor, Dave Phillips"
+				self.name = "the Mayor, Dave Phillips"
 				self.value = 10
 				self.HP_max = 15
 			else:
@@ -99,7 +103,7 @@ class Enemy(Character):
 		if encounterrand == 8:
 			if bossflags['crayon'] != True:
 				bossflags['crayon'] = True
-				self.name = "The Crayon, Bonifazio Geccerelli"
+				self.name = "the Crayon, Bonifazio Geccerelli"
 				self.value = 10
 				self.HP_max = 15
 			else:
@@ -107,7 +111,7 @@ class Enemy(Character):
 		if encounterrand <= 15:
 			if bossflags['marty'] != True:
 				bossflags['marty'] = True
-				self.name = "The one who takes you to lunch, Martin Bunch"
+				self.name = "the one who takes you to lunch, Martin Bunch"
 				self.value = 10
 				self.HP_max = 5
 			else:
@@ -115,7 +119,7 @@ class Enemy(Character):
 		if encounterrand == 16:
 			if bossflags['g-rey'] != True:
 				bossflags['g-rey'] = True
-				self.name = "The original prospect, Gary Reynolds"
+				self.name = "the original prospect, Gary Reynolds"
 				self.value = 10
 				self.HP_max = 25
 			else:
@@ -123,7 +127,7 @@ class Enemy(Character):
 		if encounterrand == 17:
 			if bossflags['terror'] != True:
 				bossflags['terror'] = True
-				self.name = "The terror, Steve Dillard"
+				self.name = "the terror, Steve Dillard"
 				self.value = 10
 				self.HP_max = 25
 			else:
@@ -131,7 +135,7 @@ class Enemy(Character):
 		if encounterrand == 18:
 			if bossflags['bye-bye'] != True:
 				bossflags['bye-bye'] = True
-				self.name = "Bye-bye himself-- Antonio Pujals"
+				self.name = "Bye-Bye himself-- Antonio Pujals"
 				self.value = 10
 				self.HP_max = 25
 			else:
@@ -139,7 +143,7 @@ class Enemy(Character):
 		if encounterrand == 19:
 			if bossflags['thunder'] != True:
 				bossflags['thunder'] = True
-				self.name = "The never-ending offense, Thunder, Juan Munoz"
+				self.name = "the never-ending offense, Thunder, Juan Munoz"
 				self.value = 10
 				self.HP_max = 35
 			else:
@@ -147,7 +151,7 @@ class Enemy(Character):
 		if encounterrand == 20:
 			if bossflags['spoon'] != True:
 				bossflags['spoon]'] = True
-				self.name = "The Spoonman Rafael Diaz" # he should do more damage once that's set up
+				self.name = "the Spoonman Rafael Diaz" # he should do more damage once that's set up
 				self.value = 10
 				self.HP_max = 20
 			else:
@@ -155,7 +159,7 @@ class Enemy(Character):
 		if encounterrand == 50:
 			if bossflags['serafino'] != True:
 				bossflags['serafino'] = True		
-				self.name = "True Grit, Serafino De Mesquites"
+				self.name = "TRUE GRIT, Serafino De Mesquites"
 				self.value = 1000
 				self.HP_max = 100
 			else:
@@ -243,12 +247,61 @@ class Player(Character):
 				else: 
 					self.enemy_attacks()
 			else:
-				for x in range(0, len(skillList)):
-					if skillList[0][x] == attackchoice and skillList[x][1] == 1:
-						
+				if attackchoice == "fastball" and skillList[0][1] == 1:
+					if self.MP >= 3:
+						if self.do_fastball(self.enemy):
+							announce = "%s defeats %s, gaining %d XP!" % (self.name, self.enemy.name, self.enemy.value)
+							print announce.upper()
+							self.experience = self.experience + self.enemy.value
+							self.level_up()
+							self.enemy = None
+							self.state = 'normal'
+						else:
+							self.enemy_attacks()
 					else:
-						print "That's not a skill."
-						
+						print "You don't have enough MP to use that skill.\n[Battle] [Status] [Flee]"
+				elif attackchoice == "power swing" and skillList[1][1] == 1:
+					if self.MP >= 2:
+						if self.do_powerswing(self.enemy):
+							announce = "%s defeats %s, gaining %d XP!" % (self.name, self.enemy.name, self.enemy.value)
+							print announce.upper()
+							self.experience = self.experience + self.enemy.value
+							self.level_up()
+							self.enemy = None
+							self.state = 'normal'
+						else:
+							self.enemy_attacks()
+					else:
+						print "You don't have enough MP to use that skill.\n[Battle] [Status] [Flee]"
+				elif attackchoice == "killer heat" and skillList[2][1] == 1:
+					if self.MP >= 15:
+						if self.do_killerheat(self.enemy):
+							announce = "%s defeats %s, gaining %d XP!" % (self.name, self.enemy.name, self.enemy.value)
+							print announce.upper()
+							self.experience = self.experience + self.enemy.value
+							self.level_up()
+							self.enemy = None
+							self.state = 'normal'
+						else:
+							self.enemy_attacks()
+					else:
+						print "You don't have enough MP to use that skill.\n[Battle] [Status] [Flee]"
+				elif attackchoice == "eephus" and skillList[3][1] == 1:
+					if self.MP >= 6:
+						if self.do_eephus(self.enemy):
+							announce = "%s defeats %s, gaining %d XP!" % (self.name, self.enemy.name, self.enemy.value)
+							print announce.upper()
+							self.experience = self.experience + self.enemy.value
+							self.level_up()
+							self.enemy = None
+							self.state = 'normal'
+						else:
+							self.enemy_attacks()
+					else:
+						print "You don't have enough MP to use that skill.\n[Battle] [Status] [Flee]"
+				else:
+						print "That's not a skill.\n[Battle] [Status] [Flee]"
+									
 					
 	def enemy_attacks(self):
 		if self.enemy.do_damage(self): 
