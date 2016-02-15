@@ -42,13 +42,27 @@ class Character:
 		self.MP -= 15
 		damage = randint(6,50) - enemy.defense
 		enemy.HP -= damage
-		print "Throwing killer heat! %s deals %d damage to %s! [%d/%d]" % (self.name, damage, enemy.name, enemy.HP, enemy.HP_max)
+		print "Throwing killer heat! %s deals %d damage to %s! Broke 100 on the gun! [%d/%d]" % (self.name, damage, enemy.name, enemy.HP, enemy.HP_max)
 		return enemy.HP <= 0
 	def do_eephus(self, enemy):
 		self.MP -= 6
 		damage = randint(5,10)
 		enemy.HP -= damage
 		print "An eephus?! %s deals %d true damage to %s! [%d/%d]" % (self.name, damage, enemy.name, enemy.HP, enemy.HP_max)
+		return enemy.HP <= 0
+	def do_contact(self, enemy):
+		self.MP -= 6
+		damage = randint(5,10)
+		enemy.HP -= damage
+		print "A great contact swing by %s deals %d true damage to %s! [%d/%d]" % (self.name, damage, enemy.name, enemy.HP, enemy.HP_max)
+		return enemy.HP <= 0
+	def do_fences(self, enemy):
+		self.MP -= 15
+		damage = randint(6,50)
+		selfdamage = randint(3,20)
+		enemy.HP -= damage
+		self.HP -= selfdamage
+		print "%s swings for the fences! It deals %d damage to %s, but %d to %s, too! Home run! [%d/%d]" % (self.name, damage, enemy.name, selfdamage, self.name, enemy.HP, enemy.HP_max)
 		return enemy.HP <= 0
 
 class Enemy(Character):
@@ -317,6 +331,15 @@ class Player(Character):
 				self.MP_max += randmp
 				self.HP += randhp
 				self.MP += randmp
+				if self.level == 2:
+					skillList[0][1] = 1
+					print "%s learned Power Swing!" % self.name
+				if self.level == 5:
+					skillList[4][1] = 1
+					print "%s learned Swing for Contact!" % self.name
+				if self.level == 9:
+					skillList[5][1] = 1
+					print "%s learned Swing for the Fences!" % self.name
 			if p.playerclass == "pitcher":
 				randhp = randint(1,3)
 				randmp = randint(1,6)
@@ -324,32 +347,35 @@ class Player(Character):
 				self.MP_max += randmp
 				self.HP += randhp
 				self.MP += randmp
-			if self.HP > self.HP_max:
-				self.HP = self.HP_max
-			if self.MP > self.MP_max:
-				self.MP = self.MP_max
+				if self.level == 5:
+					skillList[3][1] = 1
+					print "%s learned Eephus!" % self.name
+				if self.level == 9:
+					skillList[2][1] = 1
+					print "%s learned Killer Heat!" % self.name
 			print "%s leveled up! HP is now %d and MP is now %d!" % (self.name, self.HP_max, self.MP_max)
 			upgradechoice = raw_input("Increase offense or defense? [Offense/Defense] ")
 			while upgradechoice not in ['offense', 'defense', 'offense', 'defense']:
 				upgradechoice = raw_input("Increase offense or defense? [Offense/Defense] ")
 			upgradechoice = upgradechoice.lower()
+			if self.HP > self.HP_max:
+				self.HP = self.HP_max
+			if self.MP > self.MP_max:
+				self.MP = self.MP_max
 			if upgradechoice == "offense":
 				self.offense += 1
 			elif upgradechoice == "defense":
 				self.defense += 1
 			
-#Skills = {
-#	'fastball': False,
-#	'powerswing': False,
-#	'killerheat': False,
-#	'eephus': False,
-#	}
+
 
 skillList = []
 skillList.append(["Fastball",0])
 skillList.append(["Power Swing",0])
-skillList.append(["Kill Heat",0])
+skillList.append(["Killer Heat",0])
 skillList.append(["Eephus",0])
+skillList.append(["Swing for Contact",0])
+skillList.append(["Swing for the Fences",0])
 			
 Commands = {
 	'battle': Player.battle,
@@ -375,7 +401,6 @@ if p.playerclass == "batter":
 	p.MP_max = 4
 	p.offense = 3
 	p.defense = 2
-	skillList[1][1] = 1
 elif p.playerclass == "pitcher":
 	p.HP = 6
 	p.HP_max = 6
