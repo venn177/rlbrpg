@@ -292,6 +292,32 @@ class Player(Character):
 							self.enemy_attacks()
 					else:
 						print "You don't have enough MP to use that skill.\n[Attack] [Status] [Flee]"
+				elif attackchoice == "swing for contact" and skillList[4][1] == 1:
+					if self.MP >= 6:
+						if self.do_contact(self.enemy):
+							announce = "%s defeats %s, gaining %d XP!" % (self.name, self.enemy.name, self.enemy.value)
+							print announce.upper()
+							self.experience = self.experience + self.enemy.value
+							self.level_up()
+							self.enemy = None
+							self.state = 'normal'
+						else:
+							self.enemy_attacks()
+					else:
+						print "You don't have enough MP to use that skill.\n[Attack] [Status] [Flee]"					
+				elif attackchoice == "swing for the fences" and skillList[5][1] == 1:
+					if self.MP >= 6:
+						if self.do_fences(self.enemy):
+							announce = "%s defeats %s, gaining %d XP!" % (self.name, self.enemy.name, self.enemy.value)
+							print announce.upper()
+							self.experience = self.experience + self.enemy.value
+							self.level_up()
+							self.enemy = None
+							self.state = 'normal'
+						else:
+							self.enemy_attacks()
+					else:
+						print "You don't have enough MP to use that skill.\n[Attack] [Status] [Flee]"
 				else:
 						print "That's not a skill.\n[Attack] [Status] [Flee]"
 									
