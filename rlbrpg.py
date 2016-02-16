@@ -311,7 +311,7 @@ class Player(Character):
 				self.HP += randhp
 				self.MP += randmp
 				if self.level == 2:
-					skillList[0][1] = 1
+					skillList[1][1] = 1
 					print "%s learned Power Swing!" % self.name
 				if self.level == 5:
 					skillList[4][1] = 1
